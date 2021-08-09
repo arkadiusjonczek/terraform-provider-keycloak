@@ -35,6 +35,7 @@ jobs:
              KEYCLOAK_REALM=master
              KEYCLOAK_URL="http://localhost:8080"
              make testacc
+        timeout-minutes: 60
     services:
       keycloak:
         image: jboss/keycloak:${{ matrix.keycloak-version }}
