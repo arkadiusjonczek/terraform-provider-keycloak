@@ -32,7 +32,6 @@ jobs:
     services:
       keycloak:
         image: jboss/keycloak:13.0.1
-        options: --entrypoint "/bin/bash -c '/opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0'"
         ports:
           - 8080:8080
         env:
@@ -40,3 +39,4 @@ jobs:
           KEYCLOAK_LOGLEVEL: INFO
           KEYCLOAK_USER: keycloak
           KEYCLOAK_PASSWORD: password
+          SYS_PROPS: "-Dkeycloak.profile.feature.upload_scripts=enabled -Dkeycloak.profile.feature.admin_fine_grained_authz=enabled -Dkeycloak.profile.feature.token_exchange=enabled"
