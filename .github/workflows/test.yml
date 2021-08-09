@@ -11,6 +11,18 @@ jobs:
           go-version: '1.16.5' # The Go version to download (if necessary) and use.
       - run: go version
       - run: go mod download
+      - name: Install Terraform
+        working-directory: /tmp
+        run: |
+          curl -LO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+          unzip terraform_${TF_VERSION}_linux_amd64.zip
+          sudo mv terraform ${TF_ACC_TERRAFORM_PATH}
+          which terraform
+          terraform version
+        env:
+          TF_VERSION: '1.0.1'
+          TF_ACC_TERRAFORM_PATH: '/usr/local/bin/terraform'
+      - run: ./scripts/wait-for-local-keycloak.sh && ./scripts/create-terraform-client.sh
       - run: KEYCLOAK_CLIENT_ID=terraform
              KEYCLOAK_CLIENT_SECRET=884e0f95-0f42-4a63-9b1f-94274655669e
              KEYCLOAK_CLIENT_TIMEOUT=5
