@@ -10,3 +10,19 @@ jobs:
         with:
           go-version: '1.16.5' # The Go version to download (if necessary) and use.
       - run: go version
+      - run: go mod download
+      - run: KEYCLOAK_CLIENT_ID=terraform \
+             KEYCLOAK_CLIENT_SECRET=884e0f95-0f42-4a63-9b1f-94274655669e \
+             KEYCLOAK_CLIENT_TIMEOUT=5 \
+             KEYCLOAK_REALM=master \
+             KEYCLOAK_URL="http://localhost:8080" \
+             make testacc
+    services:
+      keycloak:
+        image: jboss/keycloak:13.0.1
+        command: ["-b", "0.0.0.0", "-Dkeycloak.profile.feature.upload_scripts=enabled", "-Dkeycloak.profile.feature.admin_fine_grained_authz=enabled", "-Dkeycloak.profile.feature.token_exchange=enabled"]
+        env:
+          DB_VENDOR: H2
+          KEYCLOAK_LOGLEVEL: INFO
+          KEYCLOAK_USER: keycloak
+          KEYCLOAK_PASSWORD: password
