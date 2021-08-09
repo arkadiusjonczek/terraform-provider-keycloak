@@ -11,6 +11,8 @@ jobs:
           - '12.0.4'
           - '11.0.3'
       fail-fast: false
+    env:
+      TEST_RESULTS: /tmp/test-results
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -20,9 +22,10 @@ jobs:
           go-version: '1.16.5'
       - name: Download Go modules
         run: go mod download
-      - run: |
-          which go
-          ls $(which go)
+      - name: Install go-junit-report
+        run: |
+          go get github.com/jstemmer/go-junit-report
+          mkdir $TEST_RESULTS
       - name: Install Terraform
         working-directory: /tmp
         run: |
@@ -37,7 +40,9 @@ jobs:
       - name: Initialize Keycloak
         run: ./scripts/wait-for-local-keycloak.sh && ./scripts/create-terraform-client.sh
       - name: Run Tests
-        run: make testacc
+        run: |
+          trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+          make testacc | tee ${TEST_RESULTS}/go-test.out
         env:
           KEYCLOAK_CLIENT_ID: terraform
           KEYCLOAK_CLIENT_SECRET: 884e0f95-0f42-4a63-9b1f-94274655669e
