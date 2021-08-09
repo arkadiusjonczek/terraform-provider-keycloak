@@ -20,6 +20,8 @@ jobs:
     services:
       keycloak:
         image: jboss/keycloak:13.0.1
+        ports:
+          - 8080:8080
         env:
           DB_VENDOR: H2
           KEYCLOAK_LOGLEVEL: INFO
