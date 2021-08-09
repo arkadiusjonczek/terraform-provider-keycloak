@@ -20,7 +20,6 @@ jobs:
     services:
       keycloak:
         image: jboss/keycloak:13.0.1
-        command: ["-b", "0.0.0.0", "-Dkeycloak.profile.feature.upload_scripts=enabled", "-Dkeycloak.profile.feature.admin_fine_grained_authz=enabled", "-Dkeycloak.profile.feature.token_exchange=enabled"]
         env:
           DB_VENDOR: H2
           KEYCLOAK_LOGLEVEL: INFO
