@@ -303,6 +303,14 @@ func dataSourceKeycloakRealm() *schema.Resource {
 				},
 			},
 
+			// Roles
+			"default_roles": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Set:      schema.HashString,
+				Computed: true,
+			},
+
 			//Security Defenses
 			"security_defenses": {
 				Type:     schema.TypeList,

@@ -374,6 +374,14 @@ func resourceKeycloakRealm() *schema.Resource {
 				},
 			},
 
+			// Roles
+			"default_roles": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Set:      schema.HashString,
+				Optional: true,
+			},
+
 			// Security Defenses
 			"security_defenses": {
 				Type:     schema.TypeList,
@@ -595,6 +603,13 @@ func getRealmFromData(data *schema.ResourceData) (*keycloak.Realm, error) {
 		defaultLocale = internationalizationSettings["default_locale"].(string)
 	}
 
+	defaultRoles := make([]string, 0)
+	if v, ok := data.GetOk("default_roles"); ok {
+		for _, defaultRole := range v.(*schema.Set).List() {
+			defaultRoles = append(defaultRoles, defaultRole.(string))
+		}
+	}
+
 	realmId := data.Get("realm")
 	internalId := data.Get("internal_id")
 	if internalId != "" {
@@ -620,10 +635,13 @@ func getRealmFromData(data *schema.ResourceData) (*keycloak.Realm, error) {
 		DuplicateEmailsAllowed:      data.Get("duplicate_emails_allowed").(bool),
 		SslRequired:                 data.Get("ssl_required").(string),
 
-		//internationalization
+		// internationalization
 		InternationalizationEnabled: internationalizationEnabled,
 		SupportLocales:              supportLocales,
 		DefaultLocale:               defaultLocale,
+
+		// Roles
+		DefaultRoles:			     defaultRoles,
 	}
 
 	//smtp
@@ -1072,7 +1090,7 @@ func setRealmData(data *schema.ResourceData, realm *keycloak.Realm) {
 	data.Set("action_token_generated_by_user_lifespan", getDurationStringFromSeconds(realm.ActionTokenGeneratedByUserLifespan))
 	data.Set("action_token_generated_by_admin_lifespan", getDurationStringFromSeconds(realm.ActionTokenGeneratedByAdminLifespan))
 
-	//internationalization
+	// internationalization
 	if realm.InternationalizationEnabled {
 		internationalizationSettings := make(map[string]interface{})
 		internationalizationSettings["supported_locales"] = realm.SupportLocales
@@ -1081,6 +1099,9 @@ func setRealmData(data *schema.ResourceData, realm *keycloak.Realm) {
 	} else {
 		data.Set("internationalization", nil)
 	}
+
+	// Roles
+	data.Set("default_roles", realm.DefaultRoles)
 
 	if v, ok := data.GetOk("security_defenses"); ok {
 		oldHeadersConfig := v.([]interface{})[0].(map[string]interface{})["headers"].([]interface{})
@@ -1104,7 +1125,7 @@ func setRealmData(data *schema.ResourceData, realm *keycloak.Realm) {
 
 	data.Set("password_policy", realm.PasswordPolicy)
 
-	//Flow Bindings
+	// Flow Bindings
 	data.Set("browser_flow", realm.BrowserFlow)
 	data.Set("registration_flow", realm.RegistrationFlow)
 	data.Set("direct_grant_flow", realm.DirectGrantFlow)

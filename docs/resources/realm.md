@@ -47,6 +47,10 @@ resource "keycloak_realm" "realm" {
     default_locale    = "en"
   }
 
+  default_roles = [
+    "users"
+  ]
+
   security_defenses {
     headers {
       x_frame_options                     = "DENY"
@@ -157,6 +161,10 @@ Internationalization support can be configured by using the `internationalizatio
 
 - `supported_locales` - (Required) A list of [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) locale codes that the realm should support.
 - `default_locale` - (Required) The locale to use by default. This locale code must be present within the `supported_locales` list.
+
+### Roles
+
+- `default_roles` - (Optional) A list of default roles used for the realm.
 
 ### Security Defenses
 

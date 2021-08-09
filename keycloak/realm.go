@@ -39,7 +39,7 @@ type Realm struct {
 	DuplicateEmailsAllowed      bool   `json:"duplicateEmailsAllowed"`
 	SslRequired                 string `json:"sslRequired,omitempty"`
 
-	//SMTP Server
+	// SMTP Server
 	SmtpServer SmtpServer `json:"smtpServer"`
 
 	// Themes
@@ -67,12 +67,12 @@ type Realm struct {
 	ActionTokenGeneratedByUserLifespan  int    `json:"actionTokenGeneratedByUserLifespan,omitempty"`
 	ActionTokenGeneratedByAdminLifespan int    `json:"actionTokenGeneratedByAdminLifespan,omitempty"`
 
-	//internationalization
+	// internationalization
 	InternationalizationEnabled bool     `json:"internationalizationEnabled"`
 	SupportLocales              []string `json:"supportedLocales"`
 	DefaultLocale               string   `json:"defaultLocale"`
 
-	//extra attributes of a realm
+	// extra attributes of a realm
 	Attributes map[string]interface{} `json:"attributes"`
 
 	// client-scope mapping defaults
@@ -90,9 +90,13 @@ type Realm struct {
 	MaxFailureWaitSeconds        int  `json:"maxFailureWaitSeconds"` //Max Wait
 	MaxDeltaTimeSeconds          int  `json:"maxDeltaTimeSeconds"`   //Failure Reset Time
 
+ 	// Roles
+	DefaultRoles []string `json:"defaultRoles"`
+
+	// Authentication
 	PasswordPolicy string `json:"passwordPolicy"`
 
-	//flow bindings
+	// flow bindings
 	BrowserFlow              string `json:"browserFlow,omitempty"`
 	RegistrationFlow         string `json:"registrationFlow,omitempty"`
 	DirectGrantFlow          string `json:"directGrantFlow,omitempty"`

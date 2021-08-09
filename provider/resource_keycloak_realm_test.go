@@ -278,6 +278,22 @@ func TestAccKeycloakRealm_InternationalizationDisabled(t *testing.T) {
 	})
 }
 
+func TestAccKeycloakRealm_DefaultRoles(t *testing.T) {
+	realm := acctest.RandomWithPrefix("tf-acc")
+
+	resource.Test(t, resource.TestCase{
+		ProviderFactories: testAccProviderFactories,
+		PreCheck:          func() { testAccPreCheck(t) },
+		CheckDestroy:      testAccCheckKeycloakRealmDestroy(),
+		Steps: []resource.TestStep{
+			{
+				Config: testKeycloakRealm_defaultRoles(realm, "admin"),
+				Check:  testAccCheckKeycloakRealmDefaultRolesSet("keycloak_realm.realm", "admin"),
+			},
+		},
+	})
+}
+
 func TestAccKeycloakRealm_loginConfigBasic(t *testing.T) {
 	realm := &keycloak.Realm{
 		Realm:                       "terraform-" + acctest.RandString(10),
@@ -1027,6 +1043,20 @@ func testAccCheckKeycloakRealmInternationalizationIsDisabled(resourceName string
 	}
 }
 
+func testAccCheckKeycloakRealmDefaultRolesSet(resourceName string, defaultRole string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		realm, err := getRealmFromState(s, resourceName)
+		if err != nil {
+			return err
+		}
+
+		if !contains(realm.DefaultRoles, defaultRole) {
+			return fmt.Errorf("expected realm %s to contain defaultRole %s, but was %s", realm.Realm, defaultRole, realm.DefaultRoles)
+		}
+		return nil
+	}
+}
+
 func contains(s []string, e string) bool {
 	for _, a := range s {
 		if a == e {
@@ -1312,6 +1342,20 @@ resource "keycloak_realm" "realm" {
 
 }
 	`, realm, realm, defaultLocale)
+}
+
+func testKeycloakRealm_defaultRoles(realm, defaultRole string) string {
+	return fmt.Sprintf(`
+resource "keycloak_realm" "realm" {
+	realm         = "%s"
+	enabled       = true
+	display_name  = "%s"
+	default_roles = [
+		"%s"
+	]
+
+}
+	`, realm, realm, defaultRole)
 }
 
 func testKeycloakRealm_notEnabled(realm, realmDisplayName string) string {
