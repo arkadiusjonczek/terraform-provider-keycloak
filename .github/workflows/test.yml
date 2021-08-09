@@ -50,10 +50,6 @@ jobs:
           KEYCLOAK_REALM: master
           KEYCLOAK_URL: "http://localhost:8080"
         timeout-minutes: 3600
-      - run: |
-          ls -l $TEST_RESULTS
-          cat $TEST_RESULTS/go-test-report.xml
-          cat $TEST_RESULTS/go-test.out
     services:
       keycloak:
         image: jboss/keycloak:${{ matrix.keycloak-version }}
